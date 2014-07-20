@@ -9,11 +9,15 @@
  * Implements hook_install().
  */
 function auto_login_url_tokens_install() {
+
+  // Get current language.
+  $t = get_t();
+
   // Make sure an Auto Login URL Token content type doesn't already exist.
   if (!in_array('auto_login_url_token', node_type_get_names())) {
     $type = array(
       'type' => 'auto_login_url_token',
-      'name' => st('Auto Login URL Token'),
+      'name' => $t('Auto Login URL Token'),
       'base' => 'node_content',
       'custom' => 1,
       'modified' => 1,
@@ -29,7 +33,7 @@ function auto_login_url_tokens_install() {
       $field = array(
         'field_name' => 'field_alu_token_url',
         'type' => 'text_long',
-        'label' => st('Token URL'),
+        'label' => $t('Token URL'),
       );
       field_create_field($field);
     }
@@ -37,8 +41,8 @@ function auto_login_url_tokens_install() {
     $instance = array(
       'field_name' => 'field_alu_token_url',
       'entity_type' => 'node',
-      'label' => st('Token URL'),
-      'description' => st('Auto Login URL. You may use %uid for the user id. E.g. user/%uid/edit'),
+      'label' => $t('Token URL'),
+      'description' => $t('Auto Login URL. You may use %uid for the user id. E.g. user/%uid/edit'),
       'required' => TRUE,
       'bundle' => 'auto_login_url_token',
       'widget' => array(

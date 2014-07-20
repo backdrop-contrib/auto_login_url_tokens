@@ -82,9 +82,9 @@ function auto_login_url_tokens_form($form_state) {
 /**
  * Submit handler.
  *
- * @param $form
+ * @param array $form
  *   Existing form.
- * @param $form_state
+ * @param array $form_state
  *   Current form state.
  */
 function auto_login_url_tokens_form_submit($form, &$form_state) {
@@ -135,7 +135,14 @@ function _auto_login_url_tokens_list() {
         'id' => $token_url->nid,
       );
     }
-    $list = theme_item_list(array('items' => $items, 'title' => $title, 'type' => $type, 'attributes' => $attributes));
+    $list = theme('item_list',
+      array(
+        'items' => $items,
+        'title' => $title,
+        'type' => $type,
+        'attributes' => $attributes,
+      )
+    );
 
     return $list;
   }
@@ -150,7 +157,6 @@ function _auto_login_url_tokens_list() {
 function auto_login_url_tokens_node_access($node, $op, $account) {
   $type = is_string($node) ? $node : $node->type;
 
-  dsm($type);
   if ($type == 'auto_login_url_token') {
     if (user_access('administer auto login url', $account)) {
       return NODE_ACCESS_ALLOW;
@@ -179,7 +185,7 @@ function auto_login_url_tokens_token_info() {
     // Define token.
     $info['tokens']['user']['auto-login-url-tokens-' . $token_url->nid] = array(
       'name' => $token_url->title,
-      'description' => t('Auto Login URL Token') . ': '. $token_url->title,
+      'description' => t('Auto Login URL Token') . ': ' . $token_url->title,
     );
   }
 
@@ -194,16 +200,16 @@ function auto_login_url_tokens_tokens($type, $tokens, array $data = array(), arr
   if ($type == 'user') {
     $user = $data['user'];
 
-  // Load existing token URLs.
-  $token_urls = node_load_multiple(array(), array('type' => 'auto_login_url_token'));
+    // Load existing token URLs.
+    $token_urls = node_load_multiple(array(), array('type' => 'auto_login_url_token'));
 
-  foreach ($token_urls as $token_url) {
-    foreach ($tokens as $name => $original) {
-      switch ($name) {
-        case 'auto-login-url-tokens-' . $token_url->nid:
-          $url = str_replace('%uid', $user->uid, $token_url->field_alu_token_url[$token_url->language][0]['value']);
-          $replacements[$original] = auto_login_url_create($user->uid, $url, TRUE);
-          break;
+    foreach ($token_urls as $token_url) {
+      foreach ($tokens as $name => $original) {
+        switch ($name) {
+          case 'auto-login-url-tokens-' . $token_url->nid:
+            $url = str_replace('%uid', $user->uid, $token_url->field_alu_token_url[$token_url->language][0]['value']);
+            $replacements[$original] = auto_login_url_create($user->uid, $url, TRUE);
+            break;
 
         }
       }
