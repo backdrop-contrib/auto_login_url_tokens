@@ -22,7 +22,7 @@ function auto_login_url_tokens_install() {
       'custom' => 1,
       'modified' => 1,
       'locked' => 0,
-      'title_label' => 'Auto Login URL Token'
+      'title_label' => 'Auto Login URL Token',
     );
 
     $type = node_type_set_defaults($type);
