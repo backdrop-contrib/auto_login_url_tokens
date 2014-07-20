@@ -1,0 +1,6 @@
+name = Auto Login URL Tokens
+description = Extra custom Auto Login URL Tokens.
+package = User
+core = 7.x
+
+dependencies[] = auto_login_url
