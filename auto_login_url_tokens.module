@@ -76,6 +76,12 @@ function auto_login_url_tokens_form($form_state) {
     '#value' => t('Submit'),
   );
 
+  // Notice.
+  $form['auto_login_url_token_fieldset']['notice'] = array(
+    '#type' => 'item',
+    '#markup' => t('Warning! Remember to clear cache after adding new tokens.'),
+  );
+
   return $form;
 }
 
