@@ -106,7 +106,7 @@ function auto_login_url_tokens_form_submit(array $form, array &$form_state) {
   $node->comment = 0;
 
   // Token URL.
-  $node->field_alu_token_url[$node->language][]['value'] = $form_state['values']['auto_login_url_token_url'];
+  $node->field_alu_token_url[LANGUAGE_NONE][]['value'] = $form_state['values']['auto_login_url_token_url'];
 
   // Save node.
   node_save($node);
@@ -134,7 +134,7 @@ function _auto_login_url_tokens_list() {
   if (isset($token_urls) && count($token_urls)) {
     $items = array();
     foreach ($token_urls as $token_url) {
-      $item = $token_url->title . ' -> ' . $token_url->field_alu_token_url[$token_url->language][0]['value'];
+      $item = $token_url->title . ' -> ' . $token_url->field_alu_token_url[LANGUAGE_NONE][0]['value'];
       $item = l($item, 'node/' . $token_url->nid . '/edit', array('query' => array('destination' => 'admin/config/people/autologinurl/tokens')));
       $items[] = array(
         'data' => $item,
@@ -213,7 +213,7 @@ function auto_login_url_tokens_tokens($type, $tokens, array $data = array(), arr
       foreach ($tokens as $name => $original) {
         switch ($name) {
           case 'auto-login-url-tokens-' . $token_url->nid:
-            $url = str_replace('%uid', $user->uid, $token_url->field_alu_token_url[$token_url->language][0]['value']);
+            $url = str_replace('%uid', $user->uid, $token_url->field_alu_token_url[LANGUAGE_NONE][0]['value']);
             $replacements[$original] = auto_login_url_create($user->uid, $url, TRUE);
             break;
 
