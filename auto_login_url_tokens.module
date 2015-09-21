@@ -95,21 +95,39 @@ function auto_login_url_tokens_form($form_state) {
  */
 function auto_login_url_tokens_form_submit(array $form, array &$form_state) {
   global $user;
-  $node = new stdClass();
-  $node->title = $form_state['values']['auto_login_url_token_title'];
-  $node->type = 'auto_login_url_token';
-  node_object_prepare($node);
-  $node->language = LANGUAGE_NONE;
-  $node->uid = $user->uid;
-  $node->status = 1;
-  $node->promote = 0;
-  $node->comment = 0;
+
+  /**
+   * $node = new stdClass();
+   * $node->title = $form_state['values']['auto_login_url_token_title'];
+   * $node->type = 'auto_login_url_token';
+   * node_object_prepare($node);
+   * $node->language = LANGUAGE_NONE;
+   * $node->uid = $user->uid;
+   * $node->status = 1;
+   * $node->promote = 0;
+   * $node->comment = 0;
+   *
+   * // Token URL.
+   * $node->field_alu_token_url[LANGUAGE_NONE][]['value'] = $form_state['values']['auto_login_url_token_url'];
+   *
+   * // Save node.
+   * node_save($node);
+   */
+
+  // Create new token as content.
+  $values = array(
+    'type' => 'auto_login_url_token',
+    'uid' => $user->uid,
+  );
+  $entity = entity_create('node', $values);
+  $entity = entity_metadata_wrapper('node', $entity);
+  $entity->language(LANGUAGE_NONE);
+  $entity->title = $form_state['values']['auto_login_url_token_title'];
 
   // Token URL.
-  $node->field_alu_token_url[LANGUAGE_NONE][]['value'] = $form_state['values']['auto_login_url_token_url'];
+  $entity->field_alu_token_url = $form_state['values']['auto_login_url_token_url'];
+  $entity->save();
 
-  // Save node.
-  node_save($node);
 }
 
 /**
@@ -129,16 +147,24 @@ function _auto_login_url_tokens_list() {
   );
 
   // Load existing token URLs.
-  $token_urls = node_load_multiple(array(), array('type' => 'auto_login_url_token'));
+  $token_urls = db_select('node', 'n')
+    ->fields('n', array('nid'))
+    ->condition('n.type', 'auto_login_url_token')
+    ->execute()
+    ->fetchCol();
 
   if (isset($token_urls) && count($token_urls)) {
     $items = array();
+
     foreach ($token_urls as $token_url) {
-      $item = $token_url->title . ' -> ' . $token_url->field_alu_token_url[LANGUAGE_NONE][0]['value'];
-      $item = l($item, 'node/' . $token_url->nid . '/edit', array('query' => array('destination' => 'admin/config/people/autologinurl/tokens')));
+      $token_url_entity = entity_metadata_wrapper('node', $token_url);
+
+
+      $item = $token_url_entity->title->value() . ' -> ' . $token_url_entity->field_alu_token_url->value();
+      $item = l($item, 'node/' . $token_url . '/edit', array('query' => array('destination' => 'admin/config/people/autologinurl/tokens')));
       $items[] = array(
         'data' => $item,
-        'id' => $token_url->nid,
+        'id' => $token_url,
       );
     }
     $list = theme('item_list',
@@ -207,13 +233,18 @@ function auto_login_url_tokens_tokens($type, $tokens, array $data = array(), arr
     $user = $data['user'];
 
     // Load existing token URLs.
-    $token_urls = node_load_multiple(array(), array('type' => 'auto_login_url_token'));
+    $token_urls = db_select('node', 'n')
+      ->fields('n', array('nid'))
+      ->condition('n.type', 'auto_login_url_token')
+      ->execute()
+      ->fetchCol();
 
     foreach ($token_urls as $token_url) {
+      $token_url_entity = entity_metadata_wrapper('node', $token_url);
       foreach ($tokens as $name => $original) {
         switch ($name) {
-          case 'auto-login-url-tokens-' . $token_url->nid:
-            $url = str_replace('%uid', $user->uid, $token_url->field_alu_token_url[LANGUAGE_NONE][0]['value']);
+          case 'auto-login-url-tokens-' . $token_url:
+            $url = str_replace('%uid', $user->uid, $token_url_entity->field_alu_token_url->value());
             $replacements[$original] = auto_login_url_create($user->uid, $url, TRUE);
             break;
 
