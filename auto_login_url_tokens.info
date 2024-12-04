@@ -1,7 +1,8 @@
 name = Auto Login URL Tokens
 description = Extra custom Auto Login URL Tokens.
 package = User
-core = 7.x
+backdrop = 1.x
+type = module
 
 dependencies[] = auto_login_url
-dependencies[] = entity
+dependencies[] = entity_plus

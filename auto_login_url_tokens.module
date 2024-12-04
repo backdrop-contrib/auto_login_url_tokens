@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Main file for auto_login_url_tokens module.
@@ -26,17 +25,17 @@ function auto_login_url_tokens_menu() {
 /**
  * Get form.
  *
- * @return object
+ * @return array
  *   Auto Login URL Tokens form.
  */
 function _auto_login_url_tokens_form() {
-  return drupal_get_form('auto_login_url_tokens_form');
+  return backdrop_get_form('auto_login_url_tokens_form');
 }
 
 /**
  * Tokens form for Auto Login URL.
  *
- * @return object
+ * @return array
  *   Auto Login URL Tokens form.
  */
 function auto_login_url_tokens_form($form_state) {
@@ -97,7 +96,7 @@ function auto_login_url_tokens_form_submit(array $form, array &$form_state) {
   global $user;
 
   /**
-   * $node = new stdClass();
+   * $node = new Node();
    * $node->title = $form_state['values']['auto_login_url_token_title'];
    * $node->type = 'auto_login_url_token';
    * node_object_prepare($node);
@@ -121,7 +120,7 @@ function auto_login_url_tokens_form_submit(array $form, array &$form_state) {
   );
   $entity = entity_create('node', $values);
   $entity = entity_metadata_wrapper('node', $entity);
-  $entity->language(LANGUAGE_NONE);
+  $entity->langcode(LANGUAGE_NONE);
   $entity->title = $form_state['values']['auto_login_url_token_title'];
 
   // Token URL.
