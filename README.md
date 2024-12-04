@@ -4,7 +4,8 @@ This is an extension module of Auto Login URL that creates extra tokens.
 
 ## Dependencies
 
-- [Auto Login URL](https://backdropcms.org/project/auto_login_url)
+- Auto Login URL
+- Entity Plus
 
 ## Installation
 
